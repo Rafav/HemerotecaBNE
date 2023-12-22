@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Hemeroteca BNE",
+  "version": "1.0.1",
+  "description": "Descarga masiva de la Hemeroteca de la BNE",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "matches": [
+      "*://hemerotecadigital.bne.es/hd/es/results/*"
+    ],
+    "default_icon": {
+      "16": "img/icon16.png",
+      "48": "img/icon48.png",
+      "128": "img/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "img/icon16.png",
+    "48": "img/icon48.png",
+    "128": "img/icon128.png"
+  },
+  "background": {
+    "service_worker": "js/background.js"
+  }
+}
