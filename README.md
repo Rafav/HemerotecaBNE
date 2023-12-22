@@ -1,4 +1,4 @@
-# ImPares Extension: Descarga masiva de prensa histórica de la Hemerotrca Digital de la Biblioteca Nacional de España
+# HemerotecaBNE Extension: Descarga masiva de prensa histórica de la Hemeroteca Digital de la Biblioteca Nacional de España
 
 Extensión para descargar masivamente los ejemplares de la Hemeroteca Digital
 <hr>
