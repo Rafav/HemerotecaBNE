@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     startButton.addEventListener('click', function () {
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         const activeTab = tabs[0];
-        const message = { action: 'scrapePage' };
-  
+
         // Enviar un mensaje al script de contenido (content.js)
         chrome.scripting.executeScript({
           target: { tabId: activeTab.id },
@@ -19,12 +18,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Este código se ejecutará en el contexto de la pestaña activa
     // Realiza el scraping aquí y devuelve los resultados
     const scrapedData = {}; // Realiza el scraping y guarda los resultados aquí
-  
 
     let dbCode ;
     let total ;
-    
-    
+      
     var inputElement = document.querySelector('input[type="hidden"][name="parent"]');
 
     if (inputElement) {
@@ -48,8 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
-
-    alert(total);
     // Envía los resultados de vuelta a popup.js
     chrome.runtime.sendMessage({ action: 'scrapedData', dbCode, total});
   }

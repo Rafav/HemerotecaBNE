@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Hemeroteca BNE",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Descarga masiva de la Hemeroteca de la BNE",
   "permissions": [
     "activeTab",
@@ -11,7 +11,7 @@
   "action": {
     "default_popup": "popup.html",
     "matches": [
-      "*://hemerotecadigital.bne.es/hd/es/results/*"
+      "https://hemerotecadigital.bne.es/hd/es/results/*"
     ],
     "default_icon": {
       "16": "img/icon16.png",

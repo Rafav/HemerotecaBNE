@@ -1,6 +1,6 @@
-# ImPares Extension: Descarga masiva de imágenes del Portal de Archivos Españoles (PARES)
+# ImPares Extension: Descarga masiva de prensa histórica de la Hemerotrca Digital de la Biblioteca Nacional de España
 
-Extensión para descargar masivamente imágenes de PARES
+Extensión para descargar masivamente los ejemplares de la Hemeroteca Digital
 <hr>
 
 ![Alt text](img/legajo.jpg "Legajo decorativo")
@@ -10,7 +10,8 @@ Google Chrome 88 o superior
 
 ## Uso
 
-Una vez localizado el documento, click en el icono de la extensión y pinchar en Descargar. La ruta del documento debe empezar por https://pares.mcu.es/ParesBusquedas20/catalogo/show/
+Una vez localizada la lista de ejemplares, click en el icono de la extensión y pinchar en Descargar. La ruta del documento debe empezar por "https://hemerotecadigital.bne.es/hd/es/results"
+
 
 ## Licencia
 
