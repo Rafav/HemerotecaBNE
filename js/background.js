@@ -1,20 +1,26 @@
 // background.js
 
-const url_base = "https://hemerotecadigital.bne.es/hd/es/results?parent=";
-
-const url_iterator = "&t=alt-asc&c=";
-
 const url_base_descargar_pdf = "https://hemerotecadigital.bne.es";
 
 const elementosPorPagina = 10;
 
 
-function bajarPagina(padre, numero_pagina) {
+function bajarPagina(url_base, numero_pagina) {
   //generamos la url de la página correspondiente
 
-  var url_pagina = url_base + padre + url_iterator + numero_pagina;
-  console.log('Bajamos ' + url_pagina);
-  fetch(url_pagina)
+
+  const url = new URL(url_base);
+  var iteracion = numero_pagina * elementosPorPagina;
+
+  // Modificar el valor del parámetro 's' que sirve de paginador
+  url.searchParams.set('s', iteracion);
+
+  // Devolver la URL modificada
+  console.log(numero_pagina * elementosPorPagina);
+
+  console.log('Bajamos ' + url.toString());
+
+  fetch(url.toString())
     .then(response => response.text())  // Convertir la respuesta en texto
     .then(texto => {
       // Usamos una expresión regular para encontrar todos los enlaces que contienen 'pdf'
@@ -39,13 +45,13 @@ function bajarPagina(padre, numero_pagina) {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === 'scrapedData') {
-    let paginaActual = 1;
+    let paginaActual = 0;
 
-    while ((paginaActual - 1) * elementosPorPagina < request.total) {
-      const inicio = (paginaActual - 1) * elementosPorPagina + 1;
-      const fin = Math.min(paginaActual * elementosPorPagina, request.total);
+    while ((paginaActual * elementosPorPagina) < request.total) {
+
       //bajamos pagina a pagina
-      bajarPagina(request.dbCode, paginaActual);
+
+      bajarPagina(request.currentTab, paginaActual);
       paginaActual++;
     }
   }
