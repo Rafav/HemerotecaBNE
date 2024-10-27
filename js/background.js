@@ -1,59 +1,54 @@
-// background.js
-
 const url_base_descargar_pdf = "https://hemerotecadigital.bne.es";
-
 const elementosPorPagina = 10;
+const delayBetweenRequests = 2000; // 2 seconds delay between requests
 
-
-function bajarPagina(url_base, numero_pagina) {
-  //generamos la url de la página correspondiente
-
-
+async function bajarPagina(url_base, numero_pagina) {
   const url = new URL(url_base);
   var iteracion = numero_pagina * elementosPorPagina;
-
-  // Modificar el valor del parámetro 's' que sirve de paginador
   url.searchParams.set('s', iteracion);
 
-  // Devolver la URL modificada
-  console.log(numero_pagina * elementosPorPagina);
+  console.log(`Bajamos ${url.toString()}`);
 
-  console.log('Bajamos ' + url.toString());
+  try {
+    const response = await fetch(url.toString());
+    const texto = await response.text();
+    const regex = /href="([^"]+\.pdf)/g;
+    let enlaces = [];
+    let match;
 
-  fetch(url.toString())
-    .then(response => response.text())  // Convertir la respuesta en texto
-    .then(texto => {
-      // Usamos una expresión regular para encontrar todos los enlaces que contienen 'pdf'
-      const regex = /href="([^"]+\.pdf)/g;
-      let enlaces = [];
-      let match;
-
-      while ((match = regex.exec(texto)) !== null) {
-        enlaces.push(match[1]);
-        let url_pdf = url_base_descargar_pdf + match[1];
-        console.log(url_pdf);
-        chrome.downloads.download({ url: url_pdf });
-      }
-      console.log("Enlaces PDF encontrados:", enlaces);
-    })
-    .catch(error => {
-      console.error("Error al obtener la página:", error);
-    });
-
+    while ((match = regex.exec(texto)) !== null) {
+      enlaces.push(match[1]);
+      let url_pdf = url_base_descargar_pdf + match[1];
+      console.log(url_pdf);
+      chrome.downloads.download({ url: url_pdf });
+    }
+    console.log("Enlaces PDF encontrados:", enlaces);
+    return enlaces;
+  } catch (error) {
+    console.error("Error al obtener la página:", error);
+    throw error;
+  }
 }
 
+async function processPages(currentTab, totalItems) {
+  const totalPages = Math.ceil(totalItems / elementosPorPagina);
+  
+  for (let paginaActual = 0; paginaActual < totalPages; paginaActual++) {
+    try {
+      await bajarPagina(currentTab, paginaActual);
+      await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
+    } catch (error) {
+      console.error(`Error processing page ${paginaActual}:`, error);
+      // Decide whether to continue or stop on error
+      // For now, we'll continue to the next page
+    }
+  }
+
+  console.log("Finished processing all pages");
+}
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === 'scrapedData') {
-    let paginaActual = 0;
-
-    while ((paginaActual * elementosPorPagina) < request.total) {
-
-      //bajamos pagina a pagina
-
-      bajarPagina(request.currentTab, paginaActual);
-      paginaActual++;
-    }
+    processPages(request.currentTab, request.total);
   }
 });
-
