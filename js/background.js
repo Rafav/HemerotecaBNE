@@ -7,8 +7,6 @@ async function bajarPagina(url_base, numero_pagina) {
   var iteracion = numero_pagina * elementosPorPagina;
   url.searchParams.set('s', iteracion);
 
-  console.log(`Bajamos ${url.toString()}`);
-
   try {
     const response = await fetch(url.toString());
     const texto = await response.text();
@@ -22,7 +20,6 @@ async function bajarPagina(url_base, numero_pagina) {
       console.log(url_pdf);
       chrome.downloads.download({ url: url_pdf });
     }
-    console.log("Enlaces PDF encontrados:", enlaces);
     return enlaces;
   } catch (error) {
     console.error("Error al obtener la página:", error);
@@ -31,16 +28,13 @@ async function bajarPagina(url_base, numero_pagina) {
 }
 
 async function processPages(currentTab, totalItems) {
-  const totalPages = Math.ceil(totalItems / elementosPorPagina);
-  
+  const totalPages = Math.ceil(totalItems.replace('.', '')/ elementosPorPagina);  
   for (let paginaActual = 0; paginaActual < totalPages; paginaActual++) {
     try {
       await bajarPagina(currentTab, paginaActual);
       await new Promise(resolve => setTimeout(resolve, delayBetweenRequests));
     } catch (error) {
       console.error(`Error processing page ${paginaActual}:`, error);
-      // Decide whether to continue or stop on error
-      // For now, we'll continue to the next page
     }
   }
 
