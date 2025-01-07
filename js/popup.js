@@ -44,3 +44,14 @@ function startContentScript(currentTab) {
   chrome.runtime.sendMessage({ action: 'scrapedData', currentTab, total });
 }
 
+// Escuchar actualizaciones de estado
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.action === 'updateStatus') {
+    document.getElementById('status').textContent = request.message;
+  }
+});
+
+// Manejar clic en el botón de cancelar
+document.getElementById('cancelButton').addEventListener('click', function() {
+  chrome.runtime.sendMessage({ action: 'cancelDownload' });
+});
