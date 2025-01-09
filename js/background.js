@@ -67,31 +67,31 @@ class DownloadManager {
     }
   }
 
-  downloadPDF(url_pdf) {
-    return new Promise((resolve, reject) => {
-      chrome.downloads.download({ url: url_pdf }, function(downloadId) {
-        if (chrome.runtime.lastError) {
-          reject(new Error(`Error al iniciar descarga: ${chrome.runtime.lastError.message}`));
-          return;
-        }
+ async downloadPDF(url_pdf) {
+  return new Promise((resolve, reject) => {
+    chrome.downloads.download({ url: url_pdf }, (downloadId) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(`Error al iniciar descarga: ${chrome.runtime.lastError.message}`));
+        return;
+      }
 
-        function onChanged(delta) {
-          if (delta.id === downloadId) {
-            if (delta.state && delta.state.current === 'complete') {
-              chrome.downloads.onChanged.removeListener(onChanged);
-              resolve();
-            }
-            if (delta.error) {
-              chrome.downloads.onChanged.removeListener(onChanged);
-              reject(new Error(`Error en la descarga: ${delta.error.current}`));
-            }
+      const onChanged = (delta) => {
+        if (delta.id === downloadId) {
+          if (delta.state && delta.state.current === 'complete') {
+            chrome.downloads.onChanged.removeListener(onChanged);
+            resolve();
+          }
+          if (delta.error) {
+            chrome.downloads.onChanged.removeListener(onChanged);
+            reject(new Error(`Error en la descarga: ${delta.error.current}`));
           }
         }
-        
-        chrome.downloads.onChanged.addListener(onChanged);
-      });
+      };
+      
+      chrome.downloads.onChanged.addListener(onChanged);
     });
-  }
+  });
+}
 
   async bajarPagina(url_base, numero_pagina) {
     try {
@@ -101,12 +101,16 @@ class DownloadManager {
 
       await this.updatePageStatus(`Procesando página ${numero_pagina + 1}`);
 
+      console.log(baseURL.toString());
+      
       const response = await fetch(baseURL.toString());
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const texto = await response.text();
+      
+
       const regex = /href="([^"]+\.pdf)/g;
       const enlaces = [];
       let match;
