@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Hemeroteca BNE",
-  "version": "1.1.0",
-  "description": "Descarga masiva de la Hemeroteca de la BNE",
+  "version": "2.1.0",
+  "description": "Descarga masiva de ejemplares de la Hemeroteca de la BNE",
   "permissions": [
     "activeTab",
     "scripting",
