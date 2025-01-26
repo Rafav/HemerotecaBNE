@@ -69,27 +69,49 @@ class DownloadManager {
 
   async downloadPDF(url_pdf) {
     return new Promise((resolve, reject) => {
-      chrome.downloads.download({ url: url_pdf }, (downloadId) => {
-        if (chrome.runtime.lastError) {
-          reject(new Error(`Error al iniciar descarga: ${chrome.runtime.lastError.message}`));
-          return;
-        }
-
-        const onChanged = (delta) => {
-          if (delta.id === downloadId) {
-            if (delta.state && delta.state.current === 'complete') {
-              chrome.downloads.onChanged.removeListener(onChanged);
-              resolve();
-            }
-            if (delta.error) {
-              chrome.downloads.onChanged.removeListener(onChanged);
-              reject(new Error(`Error en la descarga: ${delta.error.current}`));
-            }
+      try {
+        const url = new URL(url_pdf);
+        let downloadOptions = { url: url_pdf };
+  
+        // Check for attachment parameter and handle filename
+        const attachment = decodeURIComponent(url.searchParams.get('attachment'));
+        if (attachment) {
+          const datePattern = /(\d{1,2})[^\d](\d{1,2})[^\d](\d{4})/;
+          const match = attachment.match(datePattern);
+          
+          if (match) {
+            const year = match[3];
+            const month = String(match[2]).padStart(2, '0');
+            const day = String(match[1]).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            downloadOptions.filename = `${formattedDate}.pdf`;
           }
-        };
-        
-        chrome.downloads.onChanged.addListener(onChanged);
-      });
+        }
+  
+        chrome.downloads.download(downloadOptions, (downloadId) => {
+          if (chrome.runtime.lastError) {
+            reject(new Error(`Error al iniciar descarga: ${chrome.runtime.lastError.message}`));
+            return;
+          }
+  
+          const onChanged = (delta) => {
+            if (delta.id === downloadId) {
+              if (delta.state && delta.state.current === 'complete') {
+                chrome.downloads.onChanged.removeListener(onChanged);
+                resolve();
+              }
+              if (delta.error) {
+                chrome.downloads.onChanged.removeListener(onChanged);
+                reject(new Error(`Error en la descarga: ${delta.error.current}`));
+              }
+            }
+          };
+          
+          chrome.downloads.onChanged.addListener(onChanged);
+        });
+      } catch (error) {
+        reject(new Error(`Error processing download: ${error.message}`));
+      }
     });
   }
 
